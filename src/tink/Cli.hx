@@ -18,13 +18,14 @@ class Cli {
 		prompt = prompt.ifNull(macro new tink.cli.prompt.RetryPrompt(5));
 		return macro new tink.cli.macro.Router<$ct>($target, $prompt).process($args);
 	}
-	
+
 	public static macro function getDoc<Target:{}, T>(target:ExprOf<Target>, ?formatter:ExprOf<DocFormatter<T>>):ExprOf<T> {
 		formatter = formatter.ifNull(macro new tink.cli.doc.DefaultFormatter());
 		var doc = tink.cli.Macro.buildDoc(Context.typeof(target), target.pos);
 		return macro $formatter.format($doc);
 	}
-	
+
+	#if sys
 	public static function exit(result:Outcome<Noise, Error>) {
 		switch result {
 			case Success(_): Sys.exit(0);
@@ -34,4 +35,5 @@ class Cli {
 				Sys.println(message); Sys.exit(e.code);
 		}
 	}
+	#end
 }
